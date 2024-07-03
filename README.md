@@ -52,7 +52,7 @@ To use the Mailer script, follow these steps:
 ## Configuration
 
 - **SMTP Configuration**: Modify the `transporter` object in `index.js` to match your SMTP server settings (e.g., host, port, secure mode).
-- **Email Content**: Customize `subject.txt` and `template.html` to tailor the subject and body of your emails.
+- **Email Content**: Customize `subject.txt` and `template.html` (for base64 you can use [this website](https://codebeautify.org/base64-to-html-converter)) to tailor the subject and body of your emails.
 
 ## Notes
 
