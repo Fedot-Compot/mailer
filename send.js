@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
 const fs = require("fs");
-const { parse } = require("csv-parse");
+const csv = require("csv-parse");
 const { config } = require("dotenv");
 const path = require("path");
 config();
@@ -9,6 +9,10 @@ const attachmentsPath = path.join(__dirname, "data", "attachments");
 const subjectPath = path.join(__dirname, "data", "subject.txt");
 const reciepientsPath = path.join(__dirname, "data", "reciepients.csv");
 const templatePath = path.join(__dirname, "data", "template.html");
+
+if (process.argv[2] == "--restart") {
+  if (fs.existsSync(donePath)) fs.rmSync(donePath);
+}
 
 const tester =
   /^[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~](\.?[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/;
@@ -96,13 +100,14 @@ async function send() {
   } catch (e) {}
 
   const reciepients = (
-    await parse(fs.readFileSync(reciepientsPath), {}).toArray()
-  ).filter(([companyName, phone, personName, email]) => isValidEmail(email));
-  const toSend = reciepients.filter(
-    ([companyName, phone, personName, email]) => !done.includes(email)
-  );
+    await csv.parse(fs.readFileSync(reciepientsPath), {}).toArray()
+  )
+    .flatMap((row) => row[3].split(" "))
+    .filter((email) => isValidEmail(email));
+  const toSend = reciepients.filter((email) => !done.includes(email));
   let count = 0;
-  for ([companyName, phone, personName, email] of toSend) {
+
+  for (email of toSend) {
     await new Promise((res) => setTimeout(() => res(), WAIT_TIME));
     await sendEmail(email, subject, template);
     console.log(`${email}`);
