@@ -105,7 +105,7 @@ async function send() {
 
   const reciepients = makeUnique(
     (await csv.parse(fs.readFileSync(reciepientsPath), {}).toArray())
-      .flatMap((row) => row[3].split(" "))
+      .flatMap((row) => row[3].split(" ").split("\n"))
       .filter((email) => isValidEmail(email))
   );
   const toSend = reciepients.filter((email) => !done.includes(email));
