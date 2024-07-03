@@ -53,6 +53,10 @@ function randomString(length) {
   return result;
 }
 
+function makeUnique(arr) {
+  return [...new Set(arr)];
+}
+
 const MAX_EMAILS = +process.env.MAX_EMAILS;
 const WAIT_TIME = +process.env.WAIT_BETWEEN_MAILS * 1000;
 
@@ -99,11 +103,11 @@ async function send() {
     done = doneFile;
   } catch (e) {}
 
-  const reciepients = (
-    await csv.parse(fs.readFileSync(reciepientsPath), {}).toArray()
-  )
-    .flatMap((row) => row[3].split(" "))
-    .filter((email) => isValidEmail(email));
+  const reciepients = makeUnique(
+    (await csv.parse(fs.readFileSync(reciepientsPath), {}).toArray())
+      .flatMap((row) => row[3].split(" "))
+      .filter((email) => isValidEmail(email))
+  );
   const toSend = reciepients.filter((email) => !done.includes(email));
   let count = 0;
 
