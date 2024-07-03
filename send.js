@@ -112,6 +112,7 @@ async function send() {
     await sendEmail(email, subject, template);
     console.log(`${email}`);
     done.push(email);
+    fs.writeFileSync(donePath, JSON.stringify(done));
     if (++count >= MAX_EMAILS) break;
   }
 
@@ -119,6 +120,6 @@ async function send() {
   if (done.length === reciepients.length) {
     if (fs.existsSync(donePath)) fs.rmSync(donePath);
     console.log(`Reciepients cycle finished`);
-  } else fs.writeFileSync(donePath, JSON.stringify(done));
+  }
 }
 send();
