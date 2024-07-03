@@ -2,12 +2,13 @@ const nodemailer = require("nodemailer");
 const fs = require("fs");
 const { parse } = require("csv-parse");
 const { config } = require("dotenv");
+const path = require("path");
 config();
-const donePath = "./data/done.json";
-const attachmentsPath = "./data/attachments";
-const subjectPath = "./data/subject.txt";
-const reciepientsPath = "./data/reciepients.csv";
-const templatePath = "./data/template.html";
+const donePath = path.join(__dirname, "data", "done.json");
+const attachmentsPath = path.join(__dirname, "data", "attachments");
+const subjectPath = path.join(__dirname, "data", "subject.txt");
+const reciepientsPath = path.join(__dirname, "data", "reciepients.csv");
+const templatePath = path.join(__dirname, "data", "template.html");
 
 const tester =
   /^[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~](\.?[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/;
@@ -66,10 +67,10 @@ const template = fs.readFileSync(templatePath).toString();
 
 const attachments = fs
   .readdirSync(attachmentsPath)
-  .filter((file) => fs.lstatSync(`${attachmentsPath}/${file}`).isFile())
+  .filter((file) => fs.lstatSync(path.join(attachmentsPath, file)).isFile())
   .map((file) => ({
     filename: file,
-    path: `${attachmentsPath}/${file}`,
+    path: path.join(attachmentsPath, file),
     cid: randomString(20),
   }));
 
