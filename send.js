@@ -57,8 +57,17 @@ function makeUnique(arr) {
   return [...new Set(arr)];
 }
 
+async function wait() {
+  const waitTime =
+    MIN_WAIT_TIME +
+    Math.abs(Math.floor(Math.random() * (MAX_WAIT_TIME - MIN_WAIT_TIME)));
+  await new Promise((res) => setTimeout(res, waitTime));
+}
+
 const MAX_EMAILS = +process.env.MAX_EMAILS;
-const WAIT_TIME = +process.env.WAIT_BETWEEN_MAILS * 1000;
+
+const MAX_WAIT_TIME = +process.env.MAX_WAIT_BETWEEN_MAILS * 1000;
+const MIN_WAIT_TIME = +process.env.MIN_WAIT_BETWEEN_MAILS * 1000;
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -105,14 +114,14 @@ async function send() {
 
   const reciepients = makeUnique(
     (await csv.parse(fs.readFileSync(reciepientsPath), {}).toArray())
-      .flatMap((row) => row[3].split(" ").split("\n"))
+      .flatMap((row) => row[3].split(" "))
       .filter((email) => isValidEmail(email))
   );
   const toSend = reciepients.filter((email) => !done.includes(email));
   let count = 0;
 
   for (email of toSend) {
-    await new Promise((res) => setTimeout(() => res(), WAIT_TIME));
+    await wait();
     await sendEmail(email, subject, template);
     console.log(`${email}`);
     done.push(email);
