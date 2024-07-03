@@ -123,7 +123,9 @@ async function send() {
   for (email of toSend) {
     await wait();
     await sendEmail(email, subject, template);
-    console.log(`${email}`);
+    console.log(
+      `[${new Date().toISOString().slice(0, 19).replace("T", " ")}]: ${email}`
+    );
     done.push(email);
     fs.writeFileSync(donePath, JSON.stringify(done));
     if (++count >= MAX_EMAILS) break;
